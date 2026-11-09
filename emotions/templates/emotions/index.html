@@ -1,0 +1,62 @@
+{% extends 'emotions/base.html' %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-8">
+    <div class="card shadow-sm">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Cámara en tiempo real</strong>
+        <div>
+          <button id="btnIniciar" class="btn btn-success btn-sm">▶ Iniciar</button>
+          <button id="btnDetener" class="btn btn-danger btn-sm" disabled>■ Detener</button>
+        </div>
+      </div>
+      <div class="card-body bg-black text-center p-0" style="min-height:360px">
+        <img id="video" class="img-fluid" alt="" style="display:none">
+        <p id="placeholder" class="text-secondary pt-5">Presiona “Iniciar” para activar la cámara.</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-4">
+    <div class="card shadow-sm">
+      <div class="card-header"><strong>Emociones detectadas</strong></div>
+      <ul class="list-group list-group-flush" id="lista">
+        <li class="list-group-item text-muted">Sin datos</li>
+      </ul>
+      <div class="card-footer text-muted small">FPS: <span id="fps">0</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const video = document.getElementById('video');
+const ph = document.getElementById('placeholder');
+const bI = document.getElementById('btnIniciar'), bD = document.getElementById('btnDetener');
+let timer = null;
+const ICONOS = {neutral:'😐', happiness:'😄', surprise:'😲', sadness:'😢', anger:'😠', disgust:'🤢', fear:'😨', contempt:'😒'};
+
+bI.onclick = () => {
+  video.src = "{% url 'video_feed' %}?t=" + Date.now();
+  video.style.display = 'inline-block'; ph.style.display = 'none';
+  bI.disabled = true; bD.disabled = false;
+  timer = setInterval(actualizar, 600);
+};
+bD.onclick = () => {
+  video.src = ''; video.style.display = 'none'; ph.style.display = 'block';
+  bI.disabled = false; bD.disabled = true;
+  clearInterval(timer);
+  document.getElementById('lista').innerHTML = '<li class="list-group-item text-muted">Sin datos</li>';
+};
+async function actualizar() {
+  try {
+    const d = await (await fetch("{% url 'estado' %}")).json();
+    document.getElementById('fps').textContent = d.fps;
+    const ul = document.getElementById('lista');
+    if (!d.detecciones.length) { ul.innerHTML = '<li class="list-group-item text-muted">No se detectan rostros</li>'; return; }
+    ul.innerHTML = d.detecciones.map((x, i) =>
+      `<li class="list-group-item d-flex justify-content-between">
+         <span>Rostro ${i+1}: ${ICONOS[x.emocion] || ''} <b>${x.etiqueta}</b></span>
+         <span class="badge bg-primary">${Math.round(x.confianza*100)}%</span></li>`).join('');
+  } catch (e) {}
+}
+</script>
+{% endblock %}
