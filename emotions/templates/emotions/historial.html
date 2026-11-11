@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!doctype html>
 <html lang="es">
 <head>
@@ -320,3 +321,37 @@
 
 </body>
 </html>
+=======
+{% extends 'emotions/base.html' %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-header"><strong>Resumen ({{ total }} registros)</strong></div>
+      <div class="card-body">
+        {% for r in resumen %}
+          <div class="mb-3">
+            <div class="d-flex justify-content-between"><span>{{ r.etiqueta }}</span><span>{{ r.n }} ({{ r.pct }}%)</span></div>
+            <div class="progress"><div class="progress-bar" style="width: {{ r.pct }}%"></div></div>
+          </div>
+        {% empty %}<p class="text-muted">Aún no hay registros.</p>{% endfor %}
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-header"><strong>Últimos 20 registros</strong></div>
+      <table class="table table-sm mb-0">
+        <thead><tr><th>Emoción</th><th>Confianza</th><th>Origen</th><th>Fecha</th></tr></thead>
+        <tbody>
+        {% for u in ultimos %}
+          <tr><td>{{ u.etiqueta }}</td><td>{% widthratio u.confianza 1 100 %}%</td>
+              <td>{{ u.get_origen_display }}</td><td>{{ u.creado|date:"d/m H:i:s" }}</td></tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+>>>>>>> d003d9546cdca8b53facd1ef5a82ec583be8c683

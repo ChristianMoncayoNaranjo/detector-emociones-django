@@ -1,7 +1,14 @@
 Django>=4.2,<6.0
+<<<<<<< HEAD
 opencv-python>=4.8,<5.0
 numpy>=1.24
 psycopg2-binary>=2.9
 python-dotenv>=1.0
 djangorestframework>=3.14.0
 django-cors-headers>=4.3.0
+=======
+opencv-python>=4.8
+numpy>=1.24
+psycopg2-binary>=2.9
+python-dotenv>=1.0
+>>>>>>> d003d9546cdca8b53facd1ef5a82ec583be8c683

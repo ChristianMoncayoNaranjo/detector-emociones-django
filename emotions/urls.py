@@ -1,4 +1,5 @@
 from django.urls import path
+<<<<<<< HEAD
 from . import views, api_views
 
 urlpatterns = [
@@ -8,6 +9,12 @@ urlpatterns = [
     path("api/estadisticas/", api_views.EstadisticasAPIView.as_view(), name="api_estadisticas"),
 
     # Vistas clásicas Django (templates) conservadas para compatibilidad
+=======
+
+from . import views
+
+urlpatterns = [
+>>>>>>> d003d9546cdca8b53facd1ef5a82ec583be8c683
     path("", views.index, name="index"),
     path("video_feed/", views.video_feed, name="video_feed"),
     path("estado/", views.estado, name="estado"),
