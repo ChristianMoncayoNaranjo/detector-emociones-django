@@ -1,24 +1,24 @@
-<<<<<<< HEAD
-# 😊 Detector de Emociones en Tiempo Real
+
+#  Detector de Emociones en Tiempo Real
 
 > Aplicación web full-stack para **detección y clasificación de emociones faciales** en tiempo real, desarrollada con Django, OpenCV, el modelo FER+ (ONNX) y una interfaz cinematográfica de diseño propio.
 
 ---
 
-## 📸 Características
+##  Características
 
 | Funcionalidad | Descripción |
 |---|---|
-| 🎥 **Detección en vivo** | Streaming de la cámara web con detección facial y clasificación de emociones fotograma a fotograma |
-| 🖼️ **Análisis de imagen** | Sube cualquier foto y obtén las emociones detectadas con porcentaje de confianza |
-| 📊 **Historial** | Registro persistente de todas las detecciones con estadísticas y distribución |
-| 🤖 **Modelo FER+** | Clasificación de 8 emociones: Neutral, Feliz, Sorpresa, Tristeza, Enojo, Asco, Miedo y Desprecio |
-| 🌐 **API REST** | Endpoints Django REST Framework para integración con frontends desacoplados (Next.js, React, etc.) |
-| 🎨 **Diseño cinematográfico** | Interfaz inspirada en Nexo — fondo crema `#fbf8ef`, tipografías Space Grotesk y DM Sans |
+|  **Detección en vivo** | Streaming de la cámara web con detección facial y clasificación de emociones fotograma a fotograma |
+|  **Análisis de imagen** | Sube cualquier foto y obtén las emociones detectadas con porcentaje de confianza |
+|  **Historial** | Registro persistente de todas las detecciones con estadísticas y distribución |
+|  **Modelo FER+** | Clasificación de 8 emociones: Neutral, Feliz, Sorpresa, Tristeza, Enojo, Asco, Miedo y Desprecio |
+|  **API REST** | Endpoints Django REST Framework para integración con frontends desacoplados (Next.js, React, etc.) |
+|  **Diseño cinematográfico** | Interfaz inspirada en Nexo — fondo crema `#fbf8ef`, tipografías Space Grotesk y DM Sans |
 
 ---
 
-## 🛠️ Stack Tecnológico
+##  Stack Tecnológico
 
 **Backend**
 - Python 3.10+
@@ -34,7 +34,7 @@
 
 ---
 
-## 📁 Estructura del Proyecto
+##  Estructura del Proyecto
 
 ```
 detector-emociones-django-main/
@@ -68,7 +68,7 @@ detector-emociones-django-main/
 
 ---
 
-## ⚙️ Guía de Instalación y Ejecución
+##  Guía de Instalación y Ejecución
 
 ### Requisitos previos
 
@@ -177,7 +177,7 @@ Abre tu navegador en **http://127.0.0.1:8000/** y ya puedes usar la aplicación.
 
 ---
 
-## 🌐 Endpoints de la API REST
+##  Endpoints de la API REST
 
 La aplicación expone una API REST compatible con cualquier cliente (Next.js, React, apps móviles, etc.):
 
@@ -206,7 +206,7 @@ curl -X POST http://127.0.0.1:8000/api/detectar/ \
 
 ---
 
-## 🎭 Emociones Detectadas
+##  Emociones Detectadas
 
 El modelo FER+ clasifica las siguientes 8 categorías:
 
@@ -223,7 +223,7 @@ El modelo FER+ clasifica las siguientes 8 categorías:
 
 ---
 
-## 🔧 Configuración Avanzada con PostgreSQL
+##  Configuración Avanzada con PostgreSQL
 
 Si deseas usar PostgreSQL en lugar de SQLite:
 
@@ -241,7 +241,7 @@ python manage.py migrate
 
 ---
 
-## 📦 `requirements.txt`
+##  `requirements.txt`
 
 ```
 Django>=4.2,<6.0
@@ -255,52 +255,3 @@ django-cors-headers>=4.3.0
 
 ---
 
-## 📌 Notas Importantes
-
-- **El entorno virtual (`.venv`)** no se incluye en el repositorio. Siempre créalo localmente con `python -m venv .venv`.
-- **El modelo ONNX** tampoco se incluye. Usa `python download_model.py` para descargarlo.
-- **El archivo `.env`** tampoco se sube al repositorio (está en `.gitignore`). Usa `.env.example` como base.
-- Para conceder acceso a la cámara web el navegador requiere que el sitio sea **localhost** o corra sobre **HTTPS**.
-
----
-
-## 👨‍💻 Autores
-
-Proyecto desarrollado como entregable académico.
-
----
-
-## 📄 Licencia
-
-Este proyecto es de uso académico. Los recursos del modelo FER+ son propiedad de sus respectivos autores (Microsoft / ONNX Model Zoo).
-=======
-# Detector de Emociones en Tiempo Real (Django & OpenCV)
-
-Aplicación web desarrollada con **Python**, **Django**, **OpenCV** y **PostgreSQL** para la detección y clasificación de emociones faciales en tiempo real mediante la cámara web.
-
----
-
-## 🚀 Características del Proyecto
-- **Detección en vivo:** Streaming de video desde la cámara web utilizando OpenCV procesando fotogramas por segundo (FPS).
-- **Reconocimiento de Emociones:** Identificación de expresiones faciales (como Feliz, Neutral, Enojado, Triste, etc.).
-- **Interfaz Moderna:** Diseño oscuro optimizado con Bootstrap y estilos personalizados.
-- **Base de Datos:** Almacenamiento y gestión de registros utilizando PostgreSQL y ORM de Django.
-
----
-
-## 🛠️ Requisitos Técnicos
-- Python 3.13.5 (o superior)
-- PostgreSQL
-- Entorno virtual de Python (`venv`)
-
----
-
-## ⚙️ Instrucciones de Instalación y Ejecución
-
-Sigue estos pasos en tu terminal para clonar y ejecutar el proyecto localmente:
-
-1. **Clonar el repositorio:**
-   ```bash
-   git clone <URL-DE-TU-REPOSITORIO>
-   cd emociones
->>>>>>> d003d9546cdca8b53facd1ef5a82ec583be8c683
