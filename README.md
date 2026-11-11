@@ -16,21 +16,7 @@
 |  **API REST** | Endpoints Django REST Framework para integración con frontends desacoplados (Next.js, React, etc.) |
 |  **Diseño cinematográfico** | Interfaz inspirada en Nexo — fondo crema `#fbf8ef`, tipografías Space Grotesk y DM Sans |
 
----
 
-##  Stack Tecnológico
-
-**Backend**
-- Python 3.10+
-- Django 5.x + Django REST Framework
-- OpenCV 4.x — detección de rostros con Haar Cascades
-- Modelo FER+ ONNX — clasificación de emociones
-- PostgreSQL (producción) / SQLite (desarrollo rápido)
-- psycopg2, python-dotenv, django-cors-headers
-
-**Frontend**
-- HTML5, CSS3 (diseño propio sin frameworks externos en las vistas Django)
-- Google Fonts: Space Grotesk 700 & DM Sans 400/500
 
 ---
 
@@ -76,8 +62,7 @@ Antes de comenzar asegúrate de tener instalado:
 
 - **Python 3.10 o superior** → https://www.python.org/downloads/
 - **Git** → https://git-scm.com/
-- **PostgreSQL** (opcional, para producción) → https://www.postgresql.org/download/
-  - Para desarrollo rápido puedes usar **SQLite** sin instalación adicional.
+
 
 ---
 
@@ -175,34 +160,7 @@ python manage.py runserver
 
 Abre tu navegador en **http://127.0.0.1:8000/** y ya puedes usar la aplicación. 🎉
 
----
 
-##  Endpoints de la API REST
-
-La aplicación expone una API REST compatible con cualquier cliente (Next.js, React, apps móviles, etc.):
-
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| `POST` | `/api/detectar/` | Detectar emociones en un frame Base64 o imagen multipart |
-| `GET` | `/api/historial/` | Listar últimos 50 registros de detecciones |
-| `GET` | `/api/estadisticas/` | Resumen estadístico: distribución y porcentajes |
-
-### Ejemplo: detectar emoción enviando un frame en Base64
-
-```bash
-curl -X POST http://127.0.0.1:8000/api/detectar/ \
-  -H "Content-Type: application/json" \
-  -d '{"frame": "<base64_del_frame>", "guardar": false}'
-```
-
-### Ejemplo: subir imagen como archivo
-
-```bash
-curl -X POST http://127.0.0.1:8000/api/detectar/ \
-  -F "imagen=@foto.jpg" \
-  -F "guardar=true" \
-  -F "retornar_imagen=true"
-```
 
 ---
 
@@ -221,37 +179,5 @@ El modelo FER+ clasifica las siguientes 8 categorías:
 | 😨 fear | Miedo |
 | 😒 contempt | Desprecio |
 
----
 
-##  Configuración Avanzada con PostgreSQL
-
-Si deseas usar PostgreSQL en lugar de SQLite:
-
-1. Crea la base de datos en PostgreSQL:
-```sql
-CREATE DATABASE emociones_db;
-```
-
-2. En `.env` establece `USE_SQLITE=0` y completa las credenciales de tu servidor PostgreSQL.
-
-3. Ejecuta las migraciones:
-```bash
-python manage.py migrate
-```
-
----
-
-##  `requirements.txt`
-
-```
-Django>=4.2,<6.0
-opencv-python>=4.8,<5.0
-numpy>=1.24
-psycopg2-binary>=2.9
-python-dotenv>=1.0
-djangorestframework>=3.14.0
-django-cors-headers>=4.3.0
-```
-
----
 
