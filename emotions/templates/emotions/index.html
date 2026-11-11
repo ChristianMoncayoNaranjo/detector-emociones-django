@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nexo — Detección de Emociones</title>
+
+  <!-- Google Fonts recomendadas por la referencia: Space Grotesk 700 y DM Sans 400, 500 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..500;1,9..40,400..500&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+
+  <style>
+    /* VARIABLES Y RESET */
+    :root {
+      --bg: #fbf8ef;
+      --fg: #141715;
+      --font-title: 'Space Grotesk', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-body);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* CONTENEDOR HERO CINEMATOGRÁFICO UNICO */
+    .hero {
+      position: relative;
+      width: 100%;
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg);
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    /* CABECERA MINIMA */
+    .hero-header {
+      position: relative;
+      z-index: 20;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 30px 4.5%;
+    }
+
+    .hero-brand {
+      font-family: var(--font-title);
+      font-weight: 700;
+      font-size: 30px;
+      line-height: 1;
+      letter-spacing: -0.07em;
+      color: var(--fg);
+      text-decoration: none;
+    }
+
+    .hero-nav {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .hero-nav a {
+      font-family: var(--font-body);
+      font-weight: 500;
+      font-size: 16px;
+      color: var(--fg);
+      text-decoration: none;
+      opacity: 0.85;
+      transition: opacity 0.2s ease;
+    }
+
+    .hero-nav a:hover {
+      opacity: 1;
+    }
+
+    .btn-explore {
+      background: none;
+      border: none;
+      color: var(--fg);
+      font-family: var(--font-body);
+      font-weight: 500;
+      font-size: 17px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      transition: opacity 0.2s ease;
+    }
+
+    .btn-explore:hover {
+      opacity: 0.7;
+    }
+
+    /* TITULO SUPERIOR */
+    .hero-title-container {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      text-align: center;
+      padding: 0 4%;
+      pointer-events: none;
+      transition: opacity 0.45s ease, transform 0.45s ease;
+    }
+
+    .hero-title {
+      font-family: var(--font-title);
+      font-weight: 700;
+      font-size: clamp(42px, 5.4vw, 88px);
+      line-height: 0.9;
+      letter-spacing: -0.07em;
+      text-transform: uppercase;
+      color: var(--fg);
+      text-wrap: balance;
+    }
+
+    /* ESCENARIO CENTRADO DEL ROBOT */
+    .hero-stage {
+      position: relative;
+      width: 100%;
+      flex: 1;
+      min-height: 520px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .robot-stage-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 1200px;
+      height: 560px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* MEDIOS DE FONDO (VIDEO & IMAGEN) */
+    .robot-art {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      mix-blend-mode: multiply;
+      mask-image: linear-gradient(transparent 0%, black 5%, black 85%, transparent 100%);
+      -webkit-mask-image: linear-gradient(transparent 0%, black 5%, black 85%, transparent 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .robot-art img,
+    .robot-art video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: 50% 50%;
+    }
+
+    .robot-art video {
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+
+    .has-film .robot-art video {
+      opacity: 1;
+    }
+
+    /* DEGRADADO DE INTEGRACIÓN CON EL FONDO #fbf8ef */
+    .hero-shade {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(0deg, #fbf8ef 0%, #fbf8efe0 16%, transparent 42%);
+      z-index: 2;
+      transition: opacity 0.45s ease;
+    }
+
+    /* VISOR / CABEZA DEL ROBOT: ENCUADRE DE CÁMARA EN TIEMPO REAL */
+    .robot-head-cam-wrapper {
+      position: absolute;
+      top: 6px; /* Coincide exactamente sobre el casco/cabeza del robot */
+      left: 50%;
+      transform: translateX(-50%);
+      width: 248px;
+      height: 270px;
+      z-index: 5;
+      border-radius: 48% 48% 42% 42% / 54% 54% 44% 44%;
+      overflow: hidden;
+      background: #141715;
+      box-shadow: 0 14px 40px rgba(20, 23, 21, 0.28),
+                  inset 0 0 25px rgba(0, 0, 0, 0.85);
+      border: 3.5px solid rgba(240, 195, 30, 0.65);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                  border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .robot-head-cam-wrapper:hover {
+      transform: translateX(-50%) scale(1.02);
+      border-color: rgba(240, 195, 30, 0.95);
+      box-shadow: 0 18px 50px rgba(240, 195, 30, 0.3),
+                  inset 0 0 20px rgba(0, 0, 0, 0.7);
+    }
+
+    /* STREAMING DE CÁMARA (OPENCV FEED) */
+    .cam-feed {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 25%;
+      display: none;
+    }
+
+    /* ESTADO INACTIVO DEL VISOR */
+    .cam-standby {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      text-align: center;
+      background: radial-gradient(circle at center, #272a27 0%, #111311 100%);
+      color: #fbf8ef;
+    }
+
+    .standby-orb {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 2px solid #f3c623;
+      background: rgba(243, 198, 35, 0.15);
+      box-shadow: 0 0 18px rgba(243, 198, 35, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+      animation: pulse-ring 2.6s infinite ease-in-out;
+    }
+
+    @keyframes pulse-ring {
+      0%, 100% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.08); opacity: 1; filter: drop-shadow(0 0 10px #f3c623); }
+    }
+
+    .cam-standby p {
+      font-size: 13px;
+      line-height: 1.35;
+      color: #c7cbc7;
+    }
+
+    /* PÍLDORA CON LA EMOCIÓN Y CONFIANZA DETECTADA EN EL VISOR */
+    .emotion-badge {
+      position: absolute;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(20, 23, 21, 0.9);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fbf8ef;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 6px 16px;
+      border-radius: 999px;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      pointer-events: none;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+    }
+
+    .emotion-badge .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+    }
+
+    /* ZONA INFERIOR CON SUBTÍTULO Y BOTÓN */
+    .hero-bottom {
+      position: relative;
+      z-index: 20;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      padding: 0 24px 38px;
+      transition: opacity 0.45s ease, transform 0.45s ease;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(21px, 2vw, 26px);
+      line-height: 1.25;
+      text-align: center;
+      color: var(--fg);
+      font-weight: 400;
+    }
+
+    /* BOTÓN OSCURO CENTRADO, 60-66PX, SIN FLECHAS, REDONDEADO */
+    .hero-cta {
+      border: none;
+      background: var(--fg);
+      color: var(--bg);
+      height: 64px;
+      min-height: 60px;
+      padding: 0 44px;
+      font-family: var(--font-body);
+      font-weight: 500;
+      font-size: 18px;
+      letter-spacing: -0.025em;
+      border-radius: 999px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+      transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .hero-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.2);
+      background: #232724;
+    }
+
+    .hero-cta:active {
+      transform: translateY(0);
+    }
+
+    .hero-cta.cam-running {
+      background: #991b1b;
+    }
+
+    .hero-cta.cam-running:hover {
+      background: #7f1d1d;
+    }
+
+    /* BOTÓN VOLVER AL INICIO (MODO INMERSIVO) */
+    .hero-return {
+      position: absolute;
+      bottom: 35px;
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      background: rgba(8, 19, 38, 0.85);
+      color: #ffffff;
+      height: 60px;
+      padding: 0 32px;
+      font-family: var(--font-body);
+      font-size: 17px;
+      font-weight: 500;
+      border-radius: 999px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      cursor: pointer;
+      opacity: 0;
+      visibility: hidden;
+      z-index: 30;
+      transition: opacity 0.35s ease, visibility 0.35s ease, transform 0.2s ease;
+    }
+
+    .hero-return:hover {
+      transform: translateX(-50%) translateY(-2px);
+      background: rgba(14, 28, 54, 0.95);
+    }
+
+    /* ESTADO INMERSIVO («Ver escena») */
+    .immersive .hero-title-container,
+    .immersive .hero-bottom,
+    .immersive .hero-shade {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(20px);
+    }
+
+    .immersive .hero-return {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* ACCESIBILIDAD Y FOCO VISIBLE */
+    .hero-cta:focus-visible,
+    .hero-return:focus-visible,
+    .btn-explore:focus-visible,
+    .hero-nav a:focus-visible {
+      outline: 3px solid var(--fg);
+      outline-offset: 4px;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 700px) {
+      .hero-header {
+        padding: 24px 20px;
+      }
+      .hero-brand {
+        font-size: 26px;
+      }
+      .hero-nav {
+        gap: 16px;
+      }
+      .hero-nav a {
+        font-size: 14px;
+      }
+      .btn-explore {
+        font-size: 15px;
+      }
+      .hero-title {
+        font-size: clamp(34px, 9vw, 54px);
+        line-height: 0.95;
+      }
+      .hero-subtitle {
+        font-size: 20px;
+      }
+      .hero-cta {
+        height: 60px;
+        padding: 0 30px;
+        font-size: 17px;
+      }
+      .hero-stage {
+        min-height: 470px;
+      }
+      .robot-stage-wrap {
+        height: 480px;
+      }
+      .robot-head-cam-wrapper {
+        width: 195px;
+        height: 215px;
+        top: 8px;
+      }
+      .hero-return {
+        bottom: 28px;
+        height: 56px;
+        font-size: 15px;
+      }
+    }
+
+    /* PREFERS-REDUCED-MOTION */
+    @media (prefers-reduced-motion: reduce) {
+      .robot-art video {
+        display: none !important;
+      }
+      .robot-art img {
+        opacity: 1 !important;
+      }
+      .hero-title-container,
+      .hero-bottom,
+      .hero-cta,
+      .hero-return,
+      .robot-head-cam-wrapper {
+        transition: none !important;
+        animation: none !important;
+        transform: none !important;
+      }
+      .standby-orb {
+        animation: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <section class="hero" id="opening">
+    <!-- CABECERA CON NAVEGACIÓN -->
+    <header class="hero-header">
+      <div></div>
+      <nav class="hero-nav">
+        <a href="{% url 'subir' %}">Subir imagen</a>
+        <a href="{% url 'historial' %}">Historial</a>
+        <button class="btn-explore" id="btnExplore" type="button">Ver escena</button>
+      </nav>
+    </header>
+
+    <!-- TÍTULO OSCURO SUPERIOR -->
+    <div class="hero-title-container">
+      <h1 class="hero-title">DETECCIÓN DE EMOCIONES .</h1>
+    </div>
+
+    <!-- ESCENARIO CENTRADO DEL ROBOT CON CÁMARA EN SU CABEZA/VISOR -->
+    <div class="hero-stage">
+      <div class="robot-stage-wrap">
+        
+        <!-- MEDIOS DE FONDO (VIDEO EN LOOP + FALLBACK IMAGEN) -->
+        <div class="robot-art">
+          <img src="https://dinamosites.com/demos/cinematic-heroes-v1/media/nexo.jpg"
+               alt="Robot amarillo de cerámica y metal visto de frente"
+               fetchpriority="high">
+          <video muted loop playsinline preload="none"
+                 poster="https://dinamosites.com/demos/cinematic-heroes-v1/media/nexo.jpg"
+                 aria-hidden="true"></video>
+        </div>
+
+        <!-- CUADRO DE CÁMARA INTEGRADO EXACTAMENTE EN LA CABEZA/VISOR DEL ROBOT -->
+        <div class="robot-head-cam-wrapper" id="headCamSlot" title="Cámara en tiempo real integrada">
+          <img id="liveCamFeed"
+               class="cam-feed"
+               data-feed-url="{% url 'video_feed' %}"
+               data-status-url="{% url 'estado' %}"
+               alt="Transmisión de cámara en tiempo real">
+
+          <!-- Visor en espera -->
+          <div id="standbyScreen" class="cam-standby">
+            <div class="standby-orb">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f3c623" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                <circle cx="12" cy="13" r="4"></circle>
+              </svg>
+            </div>
+            <p>Conecta la cámara para proyectar tu rostro</p>
+          </div>
+
+          <!-- Píldora de emoción detectada en el visor -->
+          <div class="emotion-badge" id="emotionBadge">
+            <span class="live-dot"></span>
+            <span id="emotionLabel">Analizando...</span>
+            <strong id="emotionConfidence" style="margin-left: 2px;"></strong>
+          </div>
+        </div>
+
+        <div class="hero-shade"></div>
+      </div>
+    </div>
+
+    <!-- ZONA INFERIOR -->
+    <div class="hero-bottom">
+      <p class="hero-subtitle">Reconocimiento facial y emociones en tiempo real.</p>
+      <button class="hero-cta" id="btnCta" type="button">Iniciar Cámara</button>
+    </div>
+
+    <!-- BOTÓN VOLVER AL INICIO (MODO INMERSIVO) -->
+    <button class="hero-return" id="btnReturn" type="button">Volver al inicio</button>
+  </section>
+
+  <!-- CONTROL DE MOVIMIENTO Y TRANSMISIÓN -->
+  <script>
+    (function() {
+      const hero = document.getElementById('opening');
+      const video = hero.querySelector('.robot-art video');
+      const camImg = document.getElementById('liveCamFeed');
+      const standbyScreen = document.getElementById('standbyScreen');
+      const emotionBadge = document.getElementById('emotionBadge');
+      const emotionLabel = document.getElementById('emotionLabel');
+      const emotionConfidence = document.getElementById('emotionConfidence');
+      const btnCta = document.getElementById('btnCta');
+      const btnExplore = document.getElementById('btnExplore');
+      const btnReturn = document.getElementById('btnReturn');
+
+      const VIDEO_SRC = "https://media.dinamosites.com/library/v1/sections/cinematic-nexo-bddc63806488.mp4";
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+      let camActive = false;
+      let emotionPollTimer = null;
+      let immersive = false;
+      let isVisible = true;
+
+      // 1. SINCRONIZACIÓN DEL VIDEO EN LOOP
+      const syncVideo = () => {
+        if (!video) return;
+        if (reduced.matches || document.hidden || !isVisible) {
+          video.pause();
+          return;
+        }
+        if (!video.getAttribute('src')) {
+          video.src = VIDEO_SRC;
+          video.load();
+        }
+        video.play().catch(() => {});
+      };
+
+      if (video) {
+        video.addEventListener('canplay', () => {
+          hero.classList.add('has-film');
+          syncVideo();
+        });
+        video.addEventListener('error', () => hero.classList.remove('has-film'));
+        syncVideo();
+      }
+
+      // Pausar si sale de pantalla o pestaña oculta
+      const observer = new IntersectionObserver(([entry]) => {
+        isVisible = entry.isIntersecting;
+        syncVideo();
+      }, { threshold: 0.05 });
+      observer.observe(hero);
+
+      document.addEventListener('visibilitychange', syncVideo);
+      reduced.addEventListener('change', syncVideo);
+
+      // 2. MODO INMERSIVO («Ver escena» / «Volver al inicio» / Tecla Escape)
+      const openImmersive = () => {
+        immersive = true;
+        hero.classList.add('immersive');
+        if (video && !reduced.matches) video.currentTime = 0;
+        syncVideo();
+        btnReturn.focus({ preventScroll: true });
+      };
+
+      const closeImmersive = () => {
+        immersive = false;
+        hero.classList.remove('immersive');
+        btnCta.focus({ preventScroll: true });
+        syncVideo();
+      };
+
+      btnExplore.addEventListener('click', openImmersive);
+      btnReturn.addEventListener('click', closeImmersive);
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && immersive) {
+          closeImmersive();
+        }
+      });
+
+      // 3. INTEGRACIÓN CÁMARA + MODELO FER+ / OPENCV EN LA CABEZA DEL ROBOT
+      const ICONOS = {
+        neutral: '😐', happiness: '😄', surprise: '😲',
+        sadness: '😢', anger: '😠', disgust: '🤢',
+        fear: '😨', contempt: '😒'
+      };
+
+      const startCamera = () => {
+        const feedUrl = camImg.getAttribute('data-feed-url');
+        camImg.src = feedUrl + '?t=' + Date.now();
+        camImg.style.display = 'block';
+        standbyScreen.style.display = 'none';
+        emotionBadge.style.display = 'flex';
+
+        btnCta.textContent = 'Detener Cámara';
+        btnCta.classList.add('cam-running');
+        camActive = true;
+
+        emotionPollTimer = setInterval(pollEmotionStatus, 500);
+      };
+
+      const stopCamera = () => {
+        camImg.src = '';
+        camImg.style.display = 'none';
+        standbyScreen.style.display = 'flex';
+        emotionBadge.style.display = 'none';
+
+        btnCta.textContent = 'Iniciar Cámara';
+        btnCta.classList.remove('cam-running');
+        camActive = false;
+
+        if (emotionPollTimer) {
+          clearInterval(emotionPollTimer);
+          emotionPollTimer = null;
+        }
+      };
+
+      btnCta.addEventListener('click', () => {
+        if (camActive) {
+          stopCamera();
+        } else {
+          startCamera();
+        }
+      });
+
+      async function pollEmotionStatus() {
+        try {
+          const statusUrl = camImg.getAttribute('data-status-url');
+          const res = await fetch(statusUrl);
+          const data = await res.json();
+          if (data.detecciones && data.detecciones.length > 0) {
+            const top = data.detecciones[0];
+            const icon = ICONOS[top.emocion] || '';
+            emotionLabel.textContent = `${icon} ${top.etiqueta}`;
+            emotionConfidence.textContent = `${Math.round(top.confianza * 100)}%`;
+          } else {
+            emotionLabel.textContent = 'Buscando rostro...';
+            emotionConfidence.textContent = '';
+          }
+        } catch (err) {}
+      }
+    })();
+  </script>
+</body>
+</html>

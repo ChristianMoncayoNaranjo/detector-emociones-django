@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Subir Imagen — Nexo</title>
+
+  <!-- Google Fonts: Space Grotesk 700 & DM Sans 400, 500 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400..500;1,9..40,400..500&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #fbf8ef;
+      --fg: #141715;
+      --font-title: 'Space Grotesk', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* CABECERA NEXO */
+    .header {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 30px 4.5%;
+    }
+
+    .brand {
+      font-family: var(--font-title);
+      font-weight: 700;
+      font-size: 30px;
+      line-height: 1;
+      letter-spacing: -0.07em;
+      color: var(--fg);
+      text-decoration: none;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .nav a {
+      font-family: var(--font-body);
+      font-weight: 500;
+      font-size: 16px;
+      color: var(--fg);
+      text-decoration: none;
+      opacity: 0.75;
+      transition: opacity 0.2s;
+    }
+
+    .nav a:hover, .nav a.active {
+      opacity: 1;
+    }
+
+    /* CONTENEDOR PRINCIPAL */
+    .container {
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 20px 24px 60px;
+      flex: 1;
+    }
+
+    /* TÍTULOS CINEMATOGRÁFICOS */
+    .title-section {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .page-title {
+      font-family: var(--font-title);
+      font-weight: 700;
+      font-size: clamp(36px, 4.5vw, 68px);
+      line-height: 0.92;
+      letter-spacing: -0.065em;
+      text-transform: uppercase;
+      color: var(--fg);
+      margin-bottom: 12px;
+    }
+
+    .page-subtitle {
+      font-size: clamp(18px, 1.6vw, 22px);
+      color: var(--fg);
+      opacity: 0.85;
+      font-weight: 400;
+    }
+
+    /* FORMULARIO Y ZONA DE SUBIDA DRAG & DROP */
+    .upload-form-wrap {
+      width: 100%;
+    }
+
+    .upload-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 220px;
+      background: #ffffff;
+      border: 2px dashed rgba(20, 23, 21, 0.22);
+      border-radius: 24px;
+      padding: 40px 24px;
+      text-align: center;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(20, 23, 21, 0.04);
+      transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .upload-card:hover {
+      border-color: var(--fg);
+      background: #fafaf7;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(20, 23, 21, 0.08);
+    }
+
+    .upload-card.dragover {
+      border-color: #047857;
+      background: #f0fdf4;
+    }
+
+    .upload-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #141715;
+      color: #fbf8ef;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      flex-shrink: 0;
+    }
+
+    .upload-card p.main-text {
+      font-family: var(--font-title);
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 6px;
+      color: var(--fg);
+    }
+
+    .upload-card p.hint-text {
+      font-size: 14px;
+      color: rgba(20, 23, 21, 0.65);
+    }
+
+    /* INPUT DE ARCHIVO TOTALMENTE OCULTO */
+    .hidden-file-input {
+      position: absolute;
+      width: 0.1px;
+      height: 0.1px;
+      opacity: 0;
+      overflow: hidden;
+      z-index: -1;
+    }
+
+    /* NOMBRE DE ARCHIVO SELECCIONADO */
+    .file-selected-name {
+      margin-top: 14px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #047857;
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      padding: 6px 16px;
+      border-radius: 999px;
+      display: none;
+    }
+
+    /* BOTÓN ESTILO NEXO */
+    .btn-wrap {
+      display: flex;
+      justify-content: center;
+      margin-top: 28px;
+    }
+
+    .btn-nexo {
+      border: none;
+      background: var(--fg);
+      color: var(--bg);
+      height: 62px;
+      padding: 0 44px;
+      font-family: var(--font-body);
+      font-weight: 500;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+      border-radius: 999px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 18px rgba(20, 23, 21, 0.12);
+      transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-nexo:hover {
+      background: #232724;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 26px rgba(20, 23, 21, 0.18);
+    }
+
+    .btn-nexo:active {
+      transform: translateY(0);
+    }
+
+    .btn-nexo:focus-visible, .nav a:focus-visible, .upload-card:focus-visible {
+      outline: 3px solid var(--fg);
+      outline-offset: 4px;
+    }
+
+    /* MENSAJE DE ERROR / ALERTA */
+    .alert-box {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+      padding: 16px 22px;
+      border-radius: 18px;
+      font-size: 15px;
+      margin-top: 24px;
+      text-align: center;
+    }
+
+    /* RESULTADOS DEL ANÁLISIS */
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 32px;
+      margin-top: 48px;
+      align-items: start;
+    }
+
+    .result-image-box {
+      background: #fff;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 8px 30px rgba(20, 23, 21, 0.08);
+      border: 1px solid rgba(20, 23, 21, 0.08);
+    }
+
+    .result-image-box img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: contain;
+    }
+
+    .result-data-box {
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(20, 23, 21, 0.1);
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: 0 4px 24px rgba(20, 23, 21, 0.04);
+    }
+
+    .result-data-box h3 {
+      font-family: var(--font-title);
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      margin-bottom: 20px;
+    }
+
+    .face-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 18px;
+      background: #ffffff;
+      border-radius: 16px;
+      border: 1px solid rgba(20, 23, 21, 0.06);
+      margin-bottom: 12px;
+    }
+
+    .face-item .label {
+      font-weight: 500;
+      font-size: 16px;
+    }
+
+    .face-item .badge {
+      font-family: var(--font-title);
+      font-weight: 700;
+      font-size: 14px;
+      background: var(--fg);
+      color: var(--bg);
+      padding: 5px 12px;
+      border-radius: 999px;
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        padding: 24px 20px;
+      }
+      .results-grid {
+        grid-template-columns: 1fr;
+      }
+      .upload-card {
+        padding: 32px 18px;
+      }
+      .btn-nexo {
+        height: 58px;
+        padding: 0 32px;
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- CABECERA -->
+  <header class="header">
+    <a class="brand" href="{% url 'index' %}">Nexo</a>
+    <nav class="nav">
+      <a href="{% url 'index' %}">En vivo</a>
+      <a href="{% url 'subir' %}" class="active">Subir imagen</a>
+      <a href="{% url 'historial' %}">Historial</a>
+    </nav>
+  </header>
+
+  <!-- CONTENIDO -->
+  <main class="container">
+    <div class="title-section">
+      <h1 class="page-title">ANÁLISIS DE IMAGEN .</h1>
+      <p class="page-subtitle">Carga una fotografía para clasificar expresiones y emociones.</p>
+    </div>
+
+    <!-- FORMULARIO DE SUBIDA -->
+    <form method="post" enctype="multipart/form-data" id="uploadForm" class="upload-form-wrap">
+      {% csrf_token %}
+      <input type="file" name="imagen" accept="image/*" id="fileInput" class="hidden-file-input" required>
+      
+      <label class="upload-card" for="fileInput" id="dropArea" tabindex="0">
+        <div class="upload-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="17 8 12 3 7 8"></polyline>
+            <line x1="12" y1="3" x2="12" y2="15"></line>
+          </svg>
+        </div>
+        <p class="main-text">Arrastra tu imagen aquí o haz clic para explorar</p>
+        <p class="hint-text">Formatos soportados: JPG, PNG, WEBP (Hasta 10 MB)</p>
+        <span class="file-selected-name" id="fileName"></span>
+      </label>
+
+      <div class="btn-wrap">
+        <button type="submit" class="btn-nexo">Detectar Emociones</button>
+      </div>
+    </form>
+
+    {% if error %}
+      <div class="alert-box">{{ error }}</div>
+    {% endif %}
+
+    <!-- RESULTADO -->
+    {% if imagen_b64 %}
+      <div class="results-grid">
+        <div class="result-image-box">
+          <img src="data:image/jpeg;base64,{{ imagen_b64 }}" alt="Detección de emociones en imagen">
+        </div>
+        <div class="result-data-box">
+          <h3>Emociones Encontradas</h3>
+          {% for r in resultados %}
+            <div class="face-item">
+              <span class="label">Rostro {{ forloop.counter }}: <b>{{ r.etiqueta }}</b></span>
+              <span class="badge">{% widthratio r.confianza 1 100 %}%</span>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </main>
+
+  <script>
+    const fileInput = document.getElementById('fileInput');
+    const fileName = document.getElementById('fileName');
+    const dropArea = document.getElementById('dropArea');
+
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files.length > 0) {
+        fileName.textContent = 'Archivo: ' + fileInput.files[0].name;
+        fileName.style.display = 'inline-block';
+      }
+    });
+
+    // Soporte para selección mediante teclado (Enter / Espacio)
+    dropArea.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        fileInput.click();
+      }
+    });
+
+    ['dragenter', 'dragover'].forEach(name => {
+      dropArea.addEventListener(name, (e) => {
+        e.preventDefault();
+        dropArea.classList.add('dragover');
+      });
+    });
+
+    ['dragleave', 'drop'].forEach(name => {
+      dropArea.addEventListener(name, (e) => {
+        e.preventDefault();
+        dropArea.classList.remove('dragover');
+      });
+    });
+
+    dropArea.addEventListener('drop', (e) => {
+      if (e.dataTransfer.files.length > 0) {
+        fileInput.files = e.dataTransfer.files;
+        fileName.textContent = 'Archivo: ' + fileInput.files[0].name;
+        fileName.style.display = 'inline-block';
+      }
+    });
+  </script>
+</body>
+</html>
